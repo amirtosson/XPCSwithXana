@@ -1,6 +1,7 @@
 from Xana import Xana
 import numpy as np
 import DataManipulation as _data
+from timeit import default_timer
 from matplotlib import pyplot as plt
 from matplotlib.colors import LogNorm
 import pickle
@@ -10,13 +11,21 @@ import concurrent.futures
 
 def main():
     data = _data.DataManipulation()
-    data.SparseToCOO(data.GetData('fw_3_SiO2_PPG_A_00006_data_000001.h5'))
+    t1 = default_timer()
+    dataArr = data.GetData('fw_3_SiO2_PPG_A_00006_data_000001.h5')
+    t2 = default_timer()
+    print("It took to extract data: ", t2 - t1)
+    t1 = default_timer()
+    data.SparseToCOO(dataArr)
+    t2 = default_timer()
+    print("It took to convert data: ", t2-t1)
     
-    print(data.data_list)
-    
-    # v = [ data[0:1000,:,:], data[1001:2000,:,:],data[2001:3000,:,:],data[3001:4000,:,:],data[4001:4999,:,:]]
-    # with concurrent.futures.ProcessPoolExecutor(max_workers=5) as executor:
-    # executor.map(SparseToCOO, v)
+    v = [ dataArr[0:1000,:,:], dataArr[1001:2000,:,:],dataArr[2001:3000,:,:],dataArr[3001:4000,:,:],dataArr[4001:4999,:,:]]
+    t1 = default_timer()
+    with concurrent.futures.ProcessPoolExecutor(max_workers=5) as executor:
+        executor.map(data.SparseToCOO, v)
+    t2 = default_timer()
+    print("It took to convert data (using threading): ", t2-t1)
 
     # a_group_key = list(f.keys())[0]
 

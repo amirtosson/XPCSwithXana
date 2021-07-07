@@ -29,7 +29,7 @@ class DataManipulation():
         return data_array
 
     def SparseToCOO(self, arr):
-        for i in range(150):
+        for i in range(arr.shape[0]):
             arr1 = arr[i, :, :]
             a = np.transpose(np.nonzero(arr1))
             b = np.transpose(arr1[[a[:, 0]], [a[:, 1]]])
